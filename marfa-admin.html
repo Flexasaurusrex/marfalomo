@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Photos - Marfa Gallery Admin</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #2c2c2c;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .login-section, .upload-section {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        
+        .upload-section {
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4b5563;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            font-size: 14px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #1f2937;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(31,41,55,0.1);
+        }
+        
+        .file-upload-zone {
+            border: 2px dashed #d1d5db;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+        
+        .file-upload-zone:hover {
+            border-color: #1f2937;
+            background: #ffffff;
+        }
+        
+        .file-upload-zone.dragover {
+            border-color: #1f2937;
+            background: #f3f4f6;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            background: #1f2937;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31,41,55,0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #ffffff;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .preview-item {
+            position: relative;
+            aspect-ratio: 3/4;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            padding: 5px 8px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .preview-remove:hover {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+        
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        
+        .status-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #1f2937;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+        
+        .user-email {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .gallery-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #1f2937;
+            text-decoration: none;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-link:hover {
+            background: #f9fafb;
+            border-color: #1f2937;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Marfa Gallery Admin</h1>
+            <p class="subtitle">Upload your half-frame lomography</p>
+        </div>
+
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection">
+            <form id="loginForm" onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div class="status-message" id="loginStatus"></div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <div class="user-info">
+                <span class="user-email" id="userEmail"></span>
+                <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="status-message" id="uploadStatus"></div>
+
+            <div class="file-upload-zone" id="uploadZone">
+                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Click to select photos or drag & drop</div>
+                <div class="upload-hint">Portrait orientation recommended • JPG, PNG, WebP</div>
+            </div>
+
+            <div class="preview-grid" id="previewGrid"></div>
+
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <button class="btn" id="uploadBtn" onclick="uploadPhotos()" style="display: none;" disabled>
+                Upload Photos
+            </button>
+
+            <a href="marfa-gallery.html" class="gallery-link" target="_blank">
+                👁️ View Gallery
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://qqkshpkbfixeyusqpsou.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxa3NocGtiZml4ZXl1c3Fwc291Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5Mjc1ODksImV4cCI6MjA2NDUwMzU4OX0.EhAV5EvXDIRPJcp3ipBSqqo6xY6rh8Jghe__XZ4659U';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let selectedFiles = [];
+
+        // Check auth state on load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                showUploadSection(session.user.email);
+            }
+            setupUploadZone();
+        });
+
+        // Login
+        async function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const statusEl = document.getElementById('loginStatus');
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                showUploadSection(data.user.email);
+                statusEl.className = 'status-message success';
+                statusEl.textContent = 'Login successful!';
+            } catch (error) {
+                console.error('Login error:', error);
+                statusEl.className = 'status-message error';
+                statusEl.textContent = 'Login failed: ' + error.message;
+            }
+        }
+
+        // Logout
+        async function logout() {
+            await supabase.auth.signOut();
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Show upload section
+        function showUploadSection(email) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('userEmail').textContent = email;
+        }
+
+        // Setup upload zone
+        function setupUploadZone() {
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadZone.addEventListener('click', () => fileInput.click());
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        // Handle file selection
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            displayPreviews();
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (selectedFiles.length > 0) {
+                uploadBtn.style.display = 'block';
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = `Upload ${selectedFiles.length} Photo${selectedFiles.length > 1 ? 's' : ''}`;
+            }
+        }
+
+        // Display previews
+        function displayPreviews() {
+            const grid = document.getElementById('previewGrid');
+            grid.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button class="preview-remove" onclick="removeFile(${index})">×</button>
+                    `;
+                    grid.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Remove file from selection
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayPreviews();
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (selectedFiles.length === 0) {
+                uploadBtn.style.display = 'none';
+            } else {
+                uploadBtn.textContent = `Upload ${selectedFiles.length} Photo${selectedFiles.length > 1 ? 's' : ''}`;
+            }
+        }
+
+        // Compress image
+        function compressImage(file, maxWidth = 800, quality = 0.85) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = function() {
+                    let { width, height } = img;
+                    
+                    if (width > maxWidth) {
+                        height = (height * maxWidth) / width;
+                        width = maxWidth;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(compressedDataUrl);
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // Upload photos
+        async function uploadPhotos() {
+            if (selectedFiles.length === 0) return;
+
+            const uploadBtn = document.getElementById('uploadBtn');
+            const statusEl = document.getElementById('uploadStatus');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Processing...';
+            statusEl.className = 'status-message';
+            statusEl.style.display = 'none';
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            try {
+                const totalFiles = selectedFiles.length;
+                let uploadedCount = 0;
+
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    
+                    // Compress image
+                    uploadBtn.textContent = `Compressing ${i + 1}/${totalFiles}...`;
+                    const compressedImage = await compressImage(file);
+                    
+                    // Upload to database
+                    uploadBtn.textContent = `Uploading ${i + 1}/${totalFiles}...`;
+                    const { error } = await supabase
+                        .from('marfa_photos')
+                        .insert([{
+                            image_url: compressedImage
+                        }]);
+
+                    if (error) throw error;
+
+                    uploadedCount++;
+                    const progress = (uploadedCount / totalFiles) * 100;
+                    progressFill.style.width = progress + '%';
+                }
+
+                // Success
+                statusEl.className = 'status-message success';
+                statusEl.textContent = `Successfully uploaded ${uploadedCount} photo${uploadedCount > 1 ? 's' : ''}! 🎉`;
+                
+                // Reset
+                selectedFiles = [];
+                document.getElementById('previewGrid').innerHTML = '';
+                document.getElementById('fileInput').value = '';
+                uploadBtn.style.display = 'none';
+                
+                setTimeout(() => {
+                    progressBar.style.display = 'none';
+                    progressFill.style.width = '0%';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusEl.className = 'status-message error';
+                statusEl.textContent = 'Upload failed: ' + error.message;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload Photos';
+            }
+        }
+    </script>
+</body>
+</html>
