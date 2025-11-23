@@ -499,6 +499,25 @@
             color: #9ca3af;
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .footer-camera {
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            opacity: 0.6;
+            text-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+            filter: drop-shadow(0 1px 2px rgba(74, 222, 128, 0.2));
+        }
+        
+        .footer-camera:hover {
+            transform: scale(1.15) translateY(-1px);
+            opacity: 1;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.7);
+            filter: drop-shadow(0 2px 4px rgba(74, 222, 128, 0.4));
         }
         
         /* Responsive */
@@ -533,6 +552,10 @@
             
             .tagging-section {
                 padding: 20px;
+            }
+            
+            .footer-camera {
+                font-size: 14px;
             }
         }
     </style>
@@ -602,6 +625,7 @@
     <footer>
         <div class="container">
             <p>Marfa, Texas • Shot on Kodak Ektar H35 • Half-Frame Lomography</p>
+            <a href="marfa-admin.html" class="footer-camera" title="Admin Panel">📷</a>
         </div>
     </footer>
 
