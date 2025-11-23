@@ -606,10 +606,9 @@
     </footer>
 
     <script>
-        // ⚠️ REPLACE WITH YOUR NEW SUPABASE PROJECT CREDENTIALS
-        // Get these from: Supabase Dashboard → Settings → API
-        const supabaseUrl = 'YOUR_SUPABASE_PROJECT_URL';  // Example: 'https://xxxxx.supabase.co'
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';     // The 'anon' 'public' key from API settings
+        // Initialize Supabase
+        const supabaseUrl = 'https://anlmnkdemhxlgjtluufm.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFubG1ua2RlbWh4bGdqdGx1dWZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5Mjk1MzUsImV4cCI6MjA3OTUwNTUzNX0.HTKmxKhFMgjVpTMNfAYZ9CjZi2JJXbxugmnZcDMjBj8';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let photos = [];
