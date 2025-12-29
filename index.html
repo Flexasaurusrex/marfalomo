@@ -588,7 +588,7 @@
         <div class="container">
             <h1 class="hero-title">Marfa Memories</h1>
             <p class="hero-subtitle">Half-frame lomography from West Texas</p>
-            <p class="hero-info">Kodak Ektar H35 • Artblocks Week • 2025</p>
+            <p class="hero-info">Kodak Ektar H35 • Artblocks Week • 2024</p>
             <div class="hero-cta" onclick="scrollToGallery()">
                 👁️ View Gallery & Tag Your Friends
             </div>
@@ -653,10 +653,10 @@
     </footer>
 
     <script>
-        // Initialize Supabase
+        // Initialize Supabase - using var to avoid duplicate declaration errors
         const supabaseUrl = 'https://anlmnkdemhxlgjtluufm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFubG1ua2RlbWh4bGdqdGx1dWZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5Mjk1MzUsImV4cCI6MjA3OTUwNTUzNX0.HTKmxKhFMgjVpTMNfAYZ9CjZi2JJXbxugmnZcDMjBj8';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        var supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let photos = [];
         let currentPhotoId = null;
