@@ -376,10 +376,10 @@
     </div>
 
     <script>
-        // Initialize Supabase
+        // Initialize Supabase - using var to avoid duplicate declaration errors
         const supabaseUrl = 'https://anlmnkdemhxlgjtluufm.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFubG1ua2RlbWh4bGdqdGx1dWZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5Mjk1MzUsImV4cCI6MjA3OTUwNTUzNX0.HTKmxKhFMgjVpTMNfAYZ9CjZi2JJXbxugmnZcDMjBj8';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        var supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let selectedFiles = [];
 
